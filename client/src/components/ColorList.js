@@ -10,6 +10,7 @@ const ColorList = ({ colors, updateColors }) => {
   console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
+  const [newColor, setNewColor] = useState(initialColor);
 
   const editColor = color => {
     setEditing(true);
@@ -45,6 +46,38 @@ const ColorList = ({ colors, updateColors }) => {
     setEditing(false)
   };
 
+  const handleChange = e => {
+    setNewColor({
+      ...newColor,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const handleHexChange = e => {
+    setNewColor({
+      ...newColor,
+      code: { hex: e.target.value }
+    })
+  }
+
+  const addNewColor = e => {
+    e.preventDefault();
+
+    axiosWithAuth()
+      .post('/api/colors', newColor)
+      .then(res => {
+        axiosWithAuth()
+          .get('/api/colors')
+          .then(res => {
+            updateColors(res.data)
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      })
+
+  }
+
   return (
     <div className="colors-wrap">
       <p>colors</p>
@@ -70,6 +103,7 @@ const ColorList = ({ colors, updateColors }) => {
       </ul>
       {editing && (
         <form onSubmit={saveEdit}>
+
           <legend>edit color</legend>
           <label>
             color name:
@@ -80,6 +114,7 @@ const ColorList = ({ colors, updateColors }) => {
               value={colorToEdit.color}
             />
           </label>
+
           <label>
             hex code:
             <input
@@ -98,8 +133,30 @@ const ColorList = ({ colors, updateColors }) => {
           </div>
         </form>
       )}
+
+      <form onSubmit={addNewColor}>
+        <label>Add New Color(s)</label>
+        <input
+          type="text"
+          name="color"
+          placeholder="color name"
+          onChange={handleChange}
+        />
+
+        <input
+          type="text"
+          name="hex"
+          placeholder="color code"
+          onChange={handleHexChange}
+        />
+        <button> Add new color </button>
+      </form>
+
       <div className="spacer" />
       {/* stretch - build another form here to add a color */}
+
+      <div>
+      </div>
     </div>
   );
 };
