@@ -11,6 +11,8 @@ const Login = () => {
     password: ""
   })
 
+  const { push } = useHistory();
+
   const handleChange = e => {
     setCredentials({
       ...credentials,
@@ -22,26 +24,21 @@ const Login = () => {
     e.preventDefault();
 
     axiosWithAuth()
-      .post("http://localhost:5000/api/login")
+      .post("/api/login", credentials)
       .then(res => {
-        localStorage.setItem("token", res.data.patload)
-        useHistory.push("/protected")
+        localStorage.setItem("token", res.data.payload)
+        push("/protected")
       })
-      .catch(err => {
-        console.log("Err is ", err)
-      })
+      .catch(err => console.log(err))
     setCredentials({
       username: "",
       password: ""
     })
   }
 
-
-
   return (
     <>
       <h1>Welcome to the Bubble App!</h1>
-      <p>Build a login page here</p>
 
       <form onSubmit={handleSubmit}>
 
